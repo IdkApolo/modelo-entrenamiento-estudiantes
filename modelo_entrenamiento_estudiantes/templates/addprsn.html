@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Añadir usuario - VidVig{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <div>
+        <h1>Añadir usuario</h1>
+        <p>Registra a la persona y luego captura sus fotos para entrenar el modelo.</p>
+    </div>
+</header>
+
+<nav class="stepper" aria-label="Pasos para registrar una persona">
+    <div class="step-item active" aria-current="step">
+        <span class="step-number">1</span>
+        <span>Datos</span>
+    </div>
+    <span class="step-connector" aria-hidden="true"></span>
+    <div class="step-item">
+        <span class="step-number">2</span>
+        <span>Fotos</span>
+    </div>
+    <span class="step-connector" aria-hidden="true"></span>
+    <div class="step-item">
+        <span class="step-number">3</span>
+        <span>Entrenar</span>
+    </div>
+</nav>
+
+{% if not db_available %}
+<div class="notice notice-alert" role="alert">
+    <strong>Base de datos no disponible.</strong>
+    No se podrá guardar el registro hasta restablecer la conexión.
+</div>
+{% endif %}
+{% if error %}
+<div class="notice notice-alert" role="alert">{{ error }}</div>
+{% endif %}
+
+<div class="workflow-grid">
+    <section class="card panel-card">
+        <div class="panel-heading">
+            <h2>Datos de la persona</h2>
+        </div>
+        <form method="post" action="{{ url_for('addprsn_submit') }}" id="addprsnForm">
+            <div class="form-field">
+                <label class="form-label" for="txtnbr">Código</label>
+                <input class="form-control" type="text" id="txtnbr" name="txtnbr"
+                       value="{{ newnbr }}" readonly aria-describedby="code-help">
+                <small class="field-help" id="code-help">Se genera automáticamente.</small>
+            </div>
+            <div class="form-field">
+                <label class="form-label" for="txtname">Nombres completos</label>
+                <input class="form-control" type="text" id="txtname" name="txtname"
+                       value="{{ form_data.get('txtname', '') }}" maxlength="50"
+                       autocomplete="name" required aria-required="true"
+                       placeholder="Ej. Lucía Paredes Rojas">
+            </div>
+            <div class="form-columns">
+                <div class="form-field">
+                    <label class="form-label" for="optskill">Rol</label>
+                    <select class="form-select" id="optskill" name="optskill" required aria-required="true">
+                        {% set rol = form_data.get('optskill', 'Usuario') %}
+                        <option value="Usuario" {% if rol == 'Usuario' %}selected{% endif %}>Estudiante</option>
+                        <option value="Profesor" {% if rol == 'Profesor' %}selected{% endif %}>Profesor</option>
+                        <option value="Administrador" {% if rol == 'Administrador' %}selected{% endif %}>Administrador</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label class="form-label" for="txtsection">Grado y sección</label>
+                    <input class="form-control" type="text" id="txtsection" name="txtsection"
+                           value="{{ form_data.get('txtsection', '') }}" maxlength="32"
+                           required aria-required="true" placeholder="Ej. 5.° A">
+                </div>
+            </div>
+            <div class="consent-box">
+                <input class="form-check-input" type="checkbox" id="consent" name="consent"
+                       value="on" required aria-required="true"
+                       {% if form_data.get('consent') %}checked{% endif %}>
+                <label for="consent">
+                    Confirmo que cuento con el consentimiento informado para registrar y tratar los datos
+                    biométricos de esta persona, conforme a la Ley N.° 29733. Si es menor de edad,
+                    cuento con la autorización de su madre, padre o representante legal.
+                </label>
+            </div>
+            <div class="form-actions">
+                <a class="button button-outline" href="{{ url_for('home') }}">Cancelar</a>
+                <button class="button button-primary" type="submit">
+                    Siguiente: capturar fotos
+                    <span aria-hidden="true">→</span>
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <aside class="workflow-aside">
+        <section class="card panel-card">
+            <div class="panel-heading">
+                <h2>Para mejores resultados</h2>
+            </div>
+            <ul class="tip-list">
+                <li>Busca iluminación frontal y evita los contraluces.</li>
+                <li>Mantén el rostro despejado y sin sombras intensas.</li>
+                <li>Prepara distintos ángulos y expresiones naturales.</li>
+                <li>Procura que solo aparezca una persona por foto.</li>
+            </ul>
+        </section>
+        <section class="card panel-card privacy-card">
+            <div class="panel-heading">
+                <h2>Privacidad</h2>
+            </div>
+            <p>Los datos biométricos son sensibles. Informa a la persona sobre su uso, conservación y
+                eliminación, y registra únicamente con el consentimiento correspondiente.</p>
+        </section>
+    </aside>
+</div>
+{% endblock %}

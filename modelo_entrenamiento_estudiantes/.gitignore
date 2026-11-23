@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.log
+
+# Datos biométricos y modelo entrenado local.
+dataset/
+classifier.xml

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Fotos y entrenamiento - VidVig{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <div>
+        <h1>Fotos y entrenamiento</h1>
+        <p>
+            {% if persona %}
+                {{ persona[0] }} · {{ persona[1] }} · {{ persona[2] or 'Sección sin asignar' }} · Código {{ prs }}
+            {% else %}
+                Código {{ prs }}
+            {% endif %}
+        </p>
+    </div>
+</header>
+
+<nav class="stepper" aria-label="Pasos para registrar una persona">
+    <div class="step-item completed">
+        <span class="step-number" aria-hidden="true">✓</span>
+        <span>Datos</span>
+    </div>
+    <span class="step-connector completed" aria-hidden="true"></span>
+    <div class="step-item active" aria-current="step">
+        <span class="step-number">2</span>
+        <span>Fotos</span>
+    </div>
+    <span class="step-connector" aria-hidden="true"></span>
+    <div class="step-item">
+        <span class="step-number">3</span>
+        <span>Entrenar</span>
+    </div>
+</nav>
+
+{% if not db_available %}
+<div class="notice notice-alert" role="alert">
+    <strong>Base de datos no disponible.</strong>
+    No se pueden guardar fotos ni entrenar el modelo.
+</div>
+{% endif %}
+{% if error %}
+<div class="notice notice-alert" role="alert">{{ error }}</div>
+{% endif %}
+
+<div class="workflow-grid capture-layout"
+     id="capture-app"
+     data-prs="{{ prs }}"
+     data-photos-url="{{ url_for('fotos_persona_api', prs=prs) }}"
+     data-train-url="{{ url_for('train_classifier', nbr=prs) }}"
+     data-train-status-url="{{ url_for('train_status', job_id='JOB_ID') }}">
+    <section class="card panel-card camera-card">
+        <div class="panel-heading">
+            <h2>Captura de fotos</h2>
+            <span class="camera-badge" id="camera-state">Cámara detenida</span>
+        </div>
+        <div class="camera-stage">
+            <video id="camera-video" autoplay muted playsinline aria-label="Vista previa de la cámara"></video>
+            <div class="face-guide" aria-hidden="true"></div>
+            <span class="camera-help">Ajusta el rostro dentro del óvalo</span>
+            <div class="camera-error" id="camera-message" role="status" aria-live="polite">
+                Inicia la cámara para comenzar la captura.
+            </div>
+        </div>
+        <div class="angle-chips" aria-label="Ángulos y condiciones recomendadas">
+            <span class="angle-chip">De frente</span>
+            <span class="angle-chip">Perfil izquierdo</span>
+            <span class="angle-chip">Perfil derecho</span>
+            <span class="angle-chip">Luz distinta</span>
+            <span class="angle-chip">Con gafas</span>
+            <span class="angle-chip">Sonriendo</span>
+        </div>
+        <div class="capture-controls">
+            <button class="button button-outline" id="camera-toggle" type="button">Iniciar cámara</button>
+            <button class="button button-primary" id="capture-button" type="button" disabled>
+                Capturar foto
+            </button>
+        </div>
+        <canvas id="capture-canvas" class="capture-canvas" aria-hidden="true"></canvas>
+        <div class="capture-progress">
+            <div class="progress-label">
+                <span>Fotos capturadas</span>
+                <strong id="photo-count">0 de 20 recomendadas</strong>
+            </div>
+            <div class="progress-track" role="progressbar" aria-label="Fotos capturadas"
+                 aria-valuemin="0" aria-valuemax="20" aria-valuenow="0" id="photo-progress">
+                <span></span>
+            </div>
+            <small class="field-help">Se recomiendan 20; se requieren al menos 10 fotos válidas.</small>
+        </div>
+    </section>
+
+    <aside class="workflow-aside">
+        <section class="card panel-card">
+            <div class="panel-heading">
+                <h2>Fotos capturadas</h2>
+                <span class="field-help">Toca una para eliminarla</span>
+            </div>
+            <div class="photo-grid" id="photo-grid" aria-live="polite">
+                <p class="photo-empty" id="photo-empty">Todavía no hay fotos. Inicia la cámara y captura una.</p>
+            </div>
+        </section>
+
+        <section class="card panel-card training-card">
+            <div class="panel-heading">
+                <h2>Validación y entrenamiento</h2>
+            </div>
+            <ul class="validation-list">
+                <li id="minimum-rule" aria-live="polite">Mínimo 10 fotos válidas.</li>
+                <li>Se valida que haya un solo rostro en cada foto.</li>
+                <li id="quality-rule">Las fotos borrosas se marcan para reemplazarlas.</li>
+            </ul>
+            <button class="button button-primary train-button" id="train-button" type="button" disabled>
+                Guardar y entrenar modelo
+            </button>
+            <div class="training-status" id="training-status" role="status" aria-live="polite">
+                Captura al menos 10 fotos válidas para habilitar el entrenamiento.
+            </div>
+            <div class="progress-track training-progress" id="training-progress"
+                 role="progressbar" aria-label="Progreso del entrenamiento"
+                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <span></span>
+            </div>
+        </section>
+    </aside>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/captura.js') }}"></script>
+{% endblock %}

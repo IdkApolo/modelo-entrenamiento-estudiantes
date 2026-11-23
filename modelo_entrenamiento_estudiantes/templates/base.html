@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0E1320">
+    <title>{% block title %}VidVig - CCTV{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/vidvig.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+<div class="app-shell">
+    <nav id="sidebar" aria-label="Navegación principal">
+        <a class="brand" href="{{ url_for('home') }}" aria-label="VidVig CCTV, ir al panel">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="">
+            <span class="brand-copy">VidVig<small>CCTV</small></span>
+        </a>
+        <div class="nav-links">
+            <a class="nav-link{% if request.path == '/' %} active{% endif %}"
+               href="{{ url_for('home') }}"{% if request.path == '/' %} aria-current="page"{% endif %}>
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <rect x="3" y="3" width="8" height="8" rx="1.5"></rect>
+                    <rect x="13" y="3" width="8" height="8" rx="1.5"></rect>
+                    <rect x="3" y="13" width="8" height="8" rx="1.5"></rect>
+                    <rect x="13" y="13" width="8" height="8" rx="1.5"></rect>
+                </svg>
+                <span>Panel</span>
+            </a>
+            <a class="nav-link{% if request.path.startswith('/addprsn') %} active{% endif %}"
+               href="{{ url_for('addprsn') }}"{% if request.path.startswith('/addprsn') %} aria-current="page"{% endif %}>
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <circle cx="9" cy="8" r="3.5"></circle>
+                    <path d="M3 20v-1.5A5.5 5.5 0 0 1 8.5 13h1a5.5 5.5 0 0 1 5.2 3.7M19 11v7m-3.5-3.5h7"></path>
+                </svg>
+                <span>Añadir usuario</span>
+            </a>
+            <a class="nav-link{% if request.path == '/fr_page' %} active{% endif %}"
+               href="{{ url_for('fr_page') }}"{% if request.path == '/fr_page' %} aria-current="page"{% endif %}>
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <rect x="3" y="6" width="13" height="12" rx="2"></rect>
+                    <path d="m16 10 5-3v10l-5-3z"></path>
+                </svg>
+                <span>Vigilancia 24/7</span>
+            </a>
+            <a class="nav-link{% if request.path.startswith('/registros') %} active{% endif %}"
+               href="{{ url_for('registros') }}"{% if request.path.startswith('/registros') %} aria-current="page"{% endif %}>
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+                    <path d="M8 7h8M8 11h8M8 15h5"></path>
+                </svg>
+                <span>Registros</span>
+            </a>
+        </div>
+        <div class="sidebar-footer" aria-label="Sesión activa">
+            <span class="user-avatar" aria-hidden="true">AD</span>
+            <span><strong>Administrador</strong><small>Sesión activa</small></span>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container" aria-live="polite"></div>
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

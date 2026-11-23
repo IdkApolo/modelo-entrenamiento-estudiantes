@@ -1,0 +1,16 @@
+/.vscode/
+/classifier.xml
+/resources/
+/static/
+/templates/
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.log
+
+# Datos biométricos y modelo entrenado del proyecto activo.
+/modelo_entrenamiento_estudiantes/dataset/
+/modelo_entrenamiento_estudiantes/classifier.xml
